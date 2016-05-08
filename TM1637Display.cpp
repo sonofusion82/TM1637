@@ -21,8 +21,14 @@ extern "C" {
   #include <inttypes.h>
 }
 
-#include <TM1637Display.h>
+#include "TM1637Display.h"
+
+#ifdef __ARM_ARCH_6__
+// Raspberry Pi has ARMv6
+#include <wiringPi.h>
+#else
 #include <Arduino.h>
+#endif
 
 #define TM1637_I2C_COMM1    0x40
 #define TM1637_I2C_COMM2    0xC0

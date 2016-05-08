@@ -1,7 +1,6 @@
 TM1637
 ======
-Arduino library for TM1637 (LED Driver)
-
+Arduino/WiringPi library for TM1637 (LED Driver) and a Cython-based Python wrapper for Raspberry Pi
 
 Description
 -----------
@@ -25,3 +24,15 @@ The library provides a single class named TM1637Display. An instance of this cla
 
 The information given above is only a summary. Please refer to TM1637Display.h for more information. An example is included, demonstarting the operation of most of the functions.
 
+
+For Python wrapper
+------------------
+Install Cython is necessary:
+
+    sudo pip install cython
+
+Compile the cython module:
+
+    python setup.py build_ext --inplace
+
+For example usage, see tm1637_test.py
