@@ -23,9 +23,63 @@ extern "C" {
 
 #include "TM1637Display.h"
 
+
 #ifdef __ARM_ARCH_6__
 // Raspberry Pi has ARMv6
 #include <wiringPi.h>
+
+#elif defined(__XTENSA__) 
+// ESP8266 RTOS SDK
+#include "esp_common.h"
+#include "esp_misc.h"
+#include "gpio.h"
+#include "freertos/task.h"
+
+// Arduino-like wrapper functions
+#define HIGH 0x1
+#define LOW  0x0
+
+#define INPUT 0x0
+#define OUTPUT 0x1
+
+static void pinMode(uint8_t pin, uint8_t mode)
+{
+    if (pin < 16) // only for GPIO0 to GPIO15, GPIO16 is special
+    {
+        if (mode == OUTPUT)
+        {
+            GPIO_AS_OUTPUT(1 << pin);
+        }
+        else // INPUT
+        {
+            GPIO_AS_INPUT(1 << pin);
+        }
+    }
+}
+
+static void digitalWrite(uint8_t pin, uint8_t val)
+{
+    GPIO_OUTPUT_SET(pin, val ? 1 : 0);
+}
+
+static int digitalRead(uint8_t pin)
+{
+    return GPIO_INPUT_GET(pin);
+}
+
+static void delayMicroseconds(unsigned int us)
+{
+    if (us < 1000)
+    {
+        os_delay_us(us);
+    }
+    else
+    {
+        vTaskDelay((us / 1000)/portTICK_RATE_MS);
+    }
+
+}
+
 #else
 #include <Arduino.h>
 #endif
@@ -202,5 +256,34 @@ uint8_t TM1637Display::encodeDigit(uint8_t digit)
 	return digitToSegment[digit & 0x0f];
 }
 
-   
 
+/* C wrapper functions */
+TM1637_Handle_t TM1637_Init(uint8_t pinClk, uint8_t pinDIO)
+{
+    return (TM1637_Handle_t)new TM1637Display(pinClk, pinDIO);
+}
+
+void TM1637_Destroy(TM1637_Handle_t handle)
+{
+    delete (TM1637Display*)handle;
+}
+
+void TM1637_setBrightness(TM1637_Handle_t handle, uint8_t brightness)
+{
+    ((TM1637Display*)handle)->setBrightness(brightness);
+}
+
+void TM1637_setSegments(TM1637_Handle_t handle, const uint8_t segments[], uint8_t length, uint8_t pos)
+{
+    ((TM1637Display*)handle)->setSegments(segments, length, pos);
+}
+
+void TM1637_showNumberDec(TM1637_Handle_t handle, int num, bool leading_zero, uint8_t length, uint8_t pos)
+{
+    ((TM1637Display*)handle)->showNumberDec(num, leading_zero, length, pos);
+}
+
+uint8_t TM1637_encodeDigit(TM1637_Handle_t handle, uint8_t digit)
+{
+    ((TM1637Display*)handle)->encodeDigit(digit);
+}

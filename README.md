@@ -2,6 +2,8 @@ TM1637
 ======
 Arduino/WiringPi library for TM1637 (LED Driver) and a Cython-based Python wrapper for Raspberry Pi
 
+Also support for ESP8266 build using ESP8255 RTOS SDK.
+
 Description
 -----------
 An Arduino library for 7-segment display modules based on the TM1637 chip, such as Seeed Studio's [Grove 4 digit display](http://www.seeedstudio.com/depot/grove-4digit-display-p-1198.html). The TM1637 chip also has keyboard input capability, but it's not implemented in this library.

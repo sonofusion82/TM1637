@@ -27,6 +27,8 @@
 #define SEG_F   0b00100000
 #define SEG_G   0b01000000
 
+#ifdef __cplusplus
+
 class TM1637Display {
 
 public:
@@ -97,5 +99,22 @@ private:
 	uint8_t m_pinDIO;
 	uint8_t m_brightness;
 };
+
+extern "C" {
+#endif
+
+// C wrapper functions
+typedef void * TM1637_Handle_t;
+
+TM1637_Handle_t TM1637_Init(uint8_t pinClk, uint8_t pinDIO);
+void TM1637_Destroy(TM1637_Handle_t handle);
+void TM1637_setBrightness(TM1637_Handle_t handle, uint8_t brightness);
+void TM1637_setSegments(TM1637_Handle_t handle, const uint8_t segments[], uint8_t length, uint8_t pos);
+void TM1637_showNumberDec(TM1637_Handle_t handle, int num, bool leading_zero, uint8_t length, uint8_t pos);
+uint8_t TM1637_encodeDigit(TM1637_Handle_t handle, uint8_t digit);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __TM1637DISPLAY__
